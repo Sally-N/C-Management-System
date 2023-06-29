@@ -3,14 +3,15 @@ import Head from 'next/head'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import HomeComponent from '../src/components/home'
-// import styles from '../styles/Home.module.css'
+import MyComplaintsComponent from '../src/components/myComplaints'
 
 const Home: NextPage = () => {
-
+  const [isloaded, setIsloaded] = useState(false)
+  useEffect(() => {
+    setIsloaded(true)
+  }, [])
   return (
-   
-        <HomeComponent />
-
+        <MyComplaintsComponent />
   )
 }
 
