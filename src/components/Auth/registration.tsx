@@ -1,8 +1,47 @@
 import React from "react";
-import { useState, useEffect } from "react";
-
+import { useState, useEffect, FormEvent } from "react";
+import axios from "axios"
+import { RegisterInterface } from "../../interfaces/register";
 
 const SignupComponent = () => {
+    const [busy, setbusy] = useState('loading')
+    const [password, setPassword] = useState('');
+    const [cpassword, setConfirmPassword] = useState('');
+    const [username, setUserName] = useState('')
+    const [email, setEmail] = useState('')
+    const [confirmPasswordError, setConfirmPasswordError] = useState('');
+    const baseUrl = "https://www.muganedev.tech/api/v1/"
+
+    const handleSubmit = (formSubmit: FormEvent<HTMLFormElement>) => {
+       
+        const formData = {
+            username,
+            email,
+            password,
+        };
+        console.log(formData)
+        formSubmit.preventDefault()
+        setConfirmPasswordError('');
+
+        if (password !== cpassword) {
+            alert("not match")
+            return;
+        }
+
+        axios.post(`${baseUrl}users/create`, formData, { auth: {
+            username: "snzungula@gmail.com",
+            password: "foundation25"
+          }})
+            .then(res => {
+                setbusy('Loading')
+                window.location.href = "/login"
+                console.log(res.data);
+            })
+            .catch(err => {
+                console.log(err)
+                setbusy('')
+            })
+    }
     return <section className="ftco-section">
         <div className="container">
             <div className="row justify-content-center">
@@ -14,20 +53,24 @@ const SignupComponent = () => {
                                     <h3 className="mb-2 text-center">Create an Account</h3>
                                 </div>
                             </div>
-                            <form action="#" className="signin-form">
+                            <form action="#" className="signin-form" onSubmit={handleSubmit}>
                                 <div className="form-group mt-4">
-                                    <input type="text" className="form-control rounded-pill input-area" placeholder="Username" required />
+                                    <input type="text" className="form-control rounded-pill input-area" placeholder="Username" 
+                                     onChange={(e) => setUserName(e.target.value)}required />
                                 </div>
                                 <div className="form-group mt-4">
-                                    <input type="text" className="form-control rounded-pill input-area" placeholder="Email address" required />
+                                    <input type="text" className="form-control rounded-pill input-area" placeholder="Email address"
+                                     onChange={(e) => setEmail(e.target.value)} required />
                                 </div>
                                 <div className="form-group mt-4">
-                                    <input id="password-field" type="password" className="form-control rounded-pill input-area" placeholder="Password" required />
-                                    <span className="fa fa-fw fa-eye field-icon toggle-password"></span>
+                                    <input id="password-field" type="password" value={password} className="form-control rounded-pill input-area" placeholder="Password"
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        required />
                                 </div>
                                 <div className="form-group mt-4">
-                                    <input id="password-field" type="password" className="form-control rounded-pill input-area" placeholder="Confirm Password" required />
-                                    <span className="fa fa-fw fa-eye field-icon toggle-password"></span>
+                                    <input id="password-field" type="password" value={cpassword} className="form-control rounded-pill input-area" placeholder="Confirm Password"
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                        required />
                                 </div>
                                 <div className="form-group mt-4">
                                     <button type="submit" className="form-control btn btn-primary btn-teal rounded-pill submit px-3">Sign Up</button>
@@ -43,4 +86,4 @@ const SignupComponent = () => {
 
 }
 
-export default SignupComponent
+export default SignupComponent;
