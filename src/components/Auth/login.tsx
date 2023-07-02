@@ -1,9 +1,44 @@
 import Link from "next/link";
-import React from "react";
+import React, { FormEvent } from "react";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 
+const LoginComponent = (formSubmit: FormEvent<HTMLFormElement>) => {
+const router = useRouter()
 
-const LoginComponent = () => {
+  const [pass, setPassword] = useState('')
+  const [usermail, setUserMail] = useState('')
+  console.log(pass)
+  formSubmit.preventDefault
+  
+  const handleLogin = () => {
+
+    const savedUserDetailsString = localStorage.getItem('user');
+
+    if (savedUserDetailsString !== null) {
+      const savedUserDetails = JSON.parse(savedUserDetailsString)
+
+      console.log(savedUserDetails);
+      if (savedUserDetails && savedUserDetails.email == usermail) {
+
+        if (savedUserDetails.password == pass) {
+          alert('Login successful!');
+          router.push("/");
+        } else {
+          alert('Wrong Credentials');
+        }
+      } else {
+        // User not found, handle user not found case
+        alert('User not found!');
+        // Display error message or perform other actions
+      }
+    } else {
+      // User not found, handle user not found case
+      alert('User not found!');
+      // Display error message or perform other actions
+    }
+  }
+
   return <section className="ftco-section">
     <div className="container">
       <div className="row justify-content-center">
@@ -15,13 +50,16 @@ const LoginComponent = () => {
                   <h3 className="mb-2 text-center">Welcome Back</h3>
                 </div>
               </div>
-              <form action="#" className="signin-form">
+              <form action="#" className="signin-form" onSubmit={handleLogin}>
                 <div className="form-group mt-4">
-                  <input type="text" className="form-control rounded-pill input-area" placeholder="Email address" required />
+                  <input type="text" className="form-control rounded-pill input-area" placeholder="Email address"
+                    value={usermail} onChange={(e) => setUserMail(e.target.value)}
+                    required />
                 </div>
                 <div className="form-group mt-4">
-                  <input id="password-field" type="password" className="form-control rounded-pill input-area" placeholder="Password" required />
-                  <span className="fa fa-fw fa-eye field-icon toggle-password"></span>
+                  <input type="password" className="form-control rounded-pill input-area" placeholder="Password"
+                    value={pass} onChange={(e) => setPassword(e.target.value)}
+                    required />
                 </div>
                 <div className="form-group mt-4">
                   <button type="submit" className="form-control btn btn-primary btn-teal rounded-pill submit px-3">Sign In</button>
@@ -32,7 +70,7 @@ const LoginComponent = () => {
                   </div>
                 </div>
               </form>
-            <p className="text-center mt-4">Don&apos;t have an account? <Link data-toggle="tab" href="/signup" className="fw-bold txt-link">Sign Up</Link></p>
+              <p className="text-center mt-4">Don&apos;t have an account? <Link data-toggle="tab" href="/signup" className="fw-bold txt-link">Sign Up</Link></p>
             </div>
           </div>
         </div>

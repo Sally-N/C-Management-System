@@ -2,6 +2,7 @@ import React from "react";
 import { useState, useEffect, FormEvent } from "react";
 import axios from "axios"
 import { RegisterInterface } from "../../interfaces/register";
+import Link from "next/link";
 
 const SignupComponent = () => {
     const [busy, setbusy] = useState('loading')
@@ -34,6 +35,8 @@ const SignupComponent = () => {
           }})
             .then(res => {
                 setbusy('Loading')
+                localStorage.setItem('user', JSON.stringify(formData));
+
                 window.location.href = "/login"
                 console.log(res.data);
             })
@@ -76,7 +79,7 @@ const SignupComponent = () => {
                                     <button type="submit" className="form-control btn btn-primary btn-teal rounded-pill submit px-3">Sign Up</button>
                                 </div>
                             </form>
-                            <p className="text-center mt-4">Already have an account? <a data-toggle="tab" href="#signup" className="fw-bold txt-link">Sign In</a></p>
+                            <p className="text-center mt-4">Already have an account? <Link data-toggle="tab" href="/login" className="fw-bold txt-link">Sign In</Link></p>
                         </div>
                     </div>
                 </div>
