@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react'
 import HomeComponent from '../src/components/home'
 import MyComplaintsComponent from '../src/components/myComplaints'
 
-const Home: NextPage = () => {
+const MyComplaints: NextPage = () => {
   const [isloaded, setIsloaded] = useState(false)
   useEffect(() => {
     setIsloaded(true)
@@ -15,4 +15,4 @@ const Home: NextPage = () => {
   )
 }
 
-export default Home
+export default MyComplaints;

@@ -2,42 +2,60 @@ import Link from "next/link";
 import React, { FormEvent } from "react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import { generateSessionToken } from "../../../utilities/sessionUtils";
+import axios from "axios";
+import { error, log } from "console";
+import { UserInterface, Authentication } from "../../interfaces/user";
 
-const LoginComponent = (formSubmit: FormEvent<HTMLFormElement>) => {
-const router = useRouter()
+
+const LoginComponent = () => {
+
+  const router = useRouter()
+  const baseUrl = "https://www.muganedev.tech/api/v1/";
+
 
   const [pass, setPassword] = useState('')
-  const [usermail, setUserMail] = useState('')
+  const [username, setUserName] = useState('')
+  const [loggedInUser, setLoggedInUser] = useState('')
+  const [allUsers, setAllUsers] = useState<UserInterface[]>([])
   console.log(pass)
-  formSubmit.preventDefault
-  
-  const handleLogin = () => {
 
+
+  const handleLogin = (formSubmit: FormEvent<HTMLFormElement>) => {
+    formSubmit.preventDefault();
+
+    const fd = new FormData(formSubmit.currentTarget);
+    var object: any = {};
+    fd.forEach(function (value, key) {
+      object[key] = value;
+    });
+    console.log('====================================');
+    console.log(object);
+    console.log('====================================');
     const savedUserDetailsString = localStorage.getItem('user');
 
-    if (savedUserDetailsString !== null) {
-      const savedUserDetails = JSON.parse(savedUserDetailsString)
 
-      console.log(savedUserDetails);
-      if (savedUserDetails && savedUserDetails.email == usermail) {
-
-        if (savedUserDetails.password == pass) {
-          alert('Login successful!');
-          router.push("/");
-        } else {
-          alert('Wrong Credentials');
-        }
-      } else {
-        // User not found, handle user not found case
-        alert('User not found!');
-        // Display error message or perform other actions
+    axios.get(`${baseUrl}users/`, {
+      auth: object
+    }).then(res => {
+      console.log('allUsers', res.data);
+      let filterData = (res.data as UserInterface[]).filter((user) => user.email == object.username)
+      console.log('====================================');
+      console.log(filterData, object, object.username);
+      console.log('====================================');
+      alert('Login successful!');
+      let authData: Authentication = {
+        auth: object, id: filterData[0].id
       }
-    } else {
-      // User not found, handle user not found case
-      alert('User not found!');
-      // Display error message or perform other actions
-    }
+      localStorage.setItem('user', JSON.stringify(authData));
+      router.push("/");
+    }).catch(error => {
+      console.log('allUsersError', error)
+    })
   }
+
+
+
 
   return <section className="ftco-section">
     <div className="container">
@@ -52,12 +70,12 @@ const router = useRouter()
               </div>
               <form action="#" className="signin-form" onSubmit={handleLogin}>
                 <div className="form-group mt-4">
-                  <input type="text" className="form-control rounded-pill input-area" placeholder="Email address"
-                    value={usermail} onChange={(e) => setUserMail(e.target.value)}
+                  <input type="text" className="form-control rounded-pill input-area" name="username" placeholder="Username"
+                    value={username} onChange={(e) => setUserName(e.target.value)}
                     required />
                 </div>
                 <div className="form-group mt-4">
-                  <input type="password" className="form-control rounded-pill input-area" placeholder="Password"
+                  <input type="password" className="form-control rounded-pill input-area" name="password" placeholder="Password"
                     value={pass} onChange={(e) => setPassword(e.target.value)}
                     required />
                 </div>

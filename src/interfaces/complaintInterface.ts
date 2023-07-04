@@ -12,3 +12,14 @@ export interface ComplaintsInterface{
   updated_at: string
   user: string
 }
+
+export type AllComments = CommentsInterface[]
+
+export interface CommentsInterface {
+  id: string
+  comment: string
+  created_at: string
+  updated_at: string
+  complaint: string
+  user: string
+}
