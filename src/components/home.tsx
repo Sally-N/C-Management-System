@@ -6,6 +6,8 @@ import { ComplaintsInterface } from "../interfaces/complaintInterface";
 import { Authentication, UserInterface } from "../interfaces/user";
 import { generateSessionToken } from "../../utilities/sessionUtils";
 import ComplaintView from "./complaintview";
+import { useGetComments } from "../hook/comments";
+import Nav from "./nav";
 export const baseUrl = "https://www.muganedev.tech/api/v1/"
 
 
@@ -18,7 +20,7 @@ const HomeComponent = () => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('')
     // const [tokens, setUserTokens] = useState(0);
-
+const comments = useGetComments()
 
     const handleSidebarToggle = () => {
         setIsSidebarActive(!isSidebarActive);
@@ -28,27 +30,9 @@ const HomeComponent = () => {
 
     useEffect(() => {
         getComplaintsAndComments();
-    })
+    },[])
 
-    // const uId = (JSON.parse(localStorage.getItem('user')!) as Authentication).id;
-    // console.log('====================================');
-    // console.log(uId, "uuiiiuuuiiuuii");
-    // console.log('====================================');
-
-    // axios.get(`${baseUrl}users/uId/tokens`, {
-    //     auth: (JSON.parse(localStorage.getItem('user')!) as Authentication).auth
-    // }).then(
-    //     res => {
-    //         console.log(res.data);
-    //         setUserTokens(res.data)
-    //         console.log(tokens, "userTokens");
-    //     }
-    // ).catch(
-    //     error => {
-    //         console.log(error, "userTokens error");
-
-    //     }
-    // )
+   
 
 
     const getComplaintsAndComments = () => {
@@ -65,37 +49,7 @@ const HomeComponent = () => {
                 console.log(error, "allcomplaints error");
             }
         )
-
-        axios.get(`${baseUrl}comments`, {
-            auth: (JSON.parse(localStorage.getItem('user')!) as Authentication).auth
-        }).then(
-            res => {
-                console.log('====================================');
-                console.log(res.data, "comments");
-                console.log('====================================');
-            }
-        ).catch(
-            error => {
-                console.log(error, "allcomplaints error");
-
-            }
-        )
-
-        if (allComplaints) {
-            const userId = allComplaints[0]?.user;
-            axios.get(`${baseUrl}users/${userId}`, {
-                auth: (JSON.parse(localStorage.getItem('user')!) as Authentication).auth
-            }).then(
-                res => {
-                    setPostSender(res.data as UserInterface);
-                }
-            ).catch(
-                error => {
-                    console.log(error, "errrPostSender")
-
-                }
-            )
-        }
+ 
 
 
         if (allComplaints) {
@@ -128,26 +82,7 @@ const HomeComponent = () => {
     }
 
     return <div className="wrapper">
-            <nav id="sidebar" className={isSidebarActive ? 'active' : ''}>
-                <div className="sidebar-header">
-                    <h6>Complaint Management System</h6>
-                </div>
-                <ul className="list-unstyled components">
-                    <li className="active">
-                        <Link href="/">Home</Link>
-                    </li>
-                    <li>
-                        <Link href="/mycomplaints">My Complaints</Link>
-                    </li>
-                    <li>
-                        <a href="#">Profile</a>
-                    </li>
-                    <li>
-                        <a href="#">Tokens</a>
-                    </li>
-                </ul>
-
-            </nav>
+     <Nav option="home" isSidebarActive={isSidebarActive} />
 
             <div id="content">
                 <nav className="navbar navbar-expand-lg navbar-light bg-light">
@@ -168,7 +103,7 @@ const HomeComponent = () => {
                     {
                         allComplaints?.map((complaint, i) => <>
 
-                            <ComplaintView complaint={complaint} i={i} />
+                            <ComplaintView comments={comments.filter(e=>e.complaint == complaint.id)} complaint={complaint} i={i} />
 
                         </>
                         )}

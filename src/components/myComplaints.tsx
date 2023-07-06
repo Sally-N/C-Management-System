@@ -6,6 +6,8 @@ import { ComplaintsInterface } from "../interfaces/complaintInterface";
 import { Authentication, UserInterface } from "../interfaces/user";
 import { generateSessionToken } from "../../utilities/sessionUtils";
 import ComplaintView from "./complaintview";
+import { useGetComments } from "../hook/comments";
+import Nav from "./nav";
 export const baseUrl = "https://www.muganedev.tech/api/v1/"
 
 
@@ -18,7 +20,7 @@ const MyComplaintComponent = () => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('')
     const [modalOpen, setIsModalOpen] = useState(true)
-    
+    const comments = useGetComments()
 
     const handleSidebarToggle = () => {
         setIsSidebarActive(!isSidebarActive);
@@ -28,8 +30,8 @@ const MyComplaintComponent = () => {
 
     useEffect(() => {
         getComplaintsAndComments();
-    })
-    
+    },[])
+
 
 
     const getComplaintsAndComments = () => {
@@ -46,53 +48,21 @@ const MyComplaintComponent = () => {
         ).catch(
             error => {
                 console.log(error, "allcomplaints error");
-            }
-        )
+            })
 
-        axios.get(`${baseUrl}comments`, {
-            auth: (JSON.parse(localStorage.getItem('user')!) as Authentication).auth
-        }).then(
-            res => {
-                console.log('====================================');
-                console.log(res.data, "comments");
-                console.log('====================================');
-            }
-        ).catch(
-            error => {
-                console.log(error, "allcomplaints error");
-
-            }
-        )
-
-        if (myComplaints) {
-            const userId = myComplaints[0]?.user;
-            axios.get(`${baseUrl}users/${userId}`, {
-                auth: (JSON.parse(localStorage.getItem('user')!) as Authentication).auth
-            }).then(
-                res => {
-                    setPostSender(res.data as UserInterface);
-                }
-            ).catch(
-                error => {
-                    console.log(error, "errrPostSender")
-
-                }
-            )
-        }
+            
 
 
-        if (myComplaints) {
-            const timestamp = myComplaints[0]?.created_at;
-            const formattedDateTime = new Date(timestamp).toLocaleString();
-            setPostTime(formattedDateTime)
-        }
+        // if (myComplaints) {
+        //     const timestamp = myComplaints[0]?.created_at;
+        //     const formattedDateTime = new Date(timestamp).toLocaleString();
+        //     setPostTime(formattedDateTime)
+        // }
     }
 
 
     const handleComplaintData = (formSubmit: FormEvent<HTMLFormElement>) => {
         formSubmit.preventDefault();
-
-
         let fd = new FormData(formSubmit.currentTarget);
         axios.post(`${baseUrl}complaints/create`, fd, {
             auth: (JSON.parse(localStorage.getItem('user')!) as Authentication).auth,
@@ -112,26 +82,8 @@ const MyComplaintComponent = () => {
     }
 
     return <div className="wrapper">
-            <nav id="sidebar" className={isSidebarActive ? 'active' : ''}>
-                <div className="sidebar-header">
-                    <h6>Complaint Management System</h6>
-                </div>
-                <ul className="list-unstyled components">
-                    <li>
-                        <Link href="/">Home</Link>
-                    </li>
-                    <li className="active">
-                        <Link href="/mycomplaints">My Complaints</Link>
-                    </li>
-                    <li>
-                        <a href="#">Profile</a>
-                    </li>
-                    <li>
-                        <a href="#">Tokens</a>
-                    </li>
-                </ul>
-
-            </nav>
+          
+     <Nav option="mycomplaint" isSidebarActive={isSidebarActive} />
 
             <div id="content">
                 <nav className="navbar navbar-expand-lg navbar-light bg-light">
@@ -152,7 +104,7 @@ const MyComplaintComponent = () => {
                     {
                         myComplaints?.map((complaint, i) => <>
 
-                            <ComplaintView complaint={complaint} i={i} />
+                            <ComplaintView comments={ comments.filter(e=> e.complaint == complaint.id ) } complaint={complaint} i={i} />
 
                         </>
                         )}

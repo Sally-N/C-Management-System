@@ -8,6 +8,7 @@ export interface UserInterface {
 export interface Authentication {
   auth: Auth
   id: string
+  userName: string
 }
 
 export interface Auth {

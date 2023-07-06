@@ -1,11 +1,12 @@
 import Link from "next/link";
-import React, { FormEvent } from "react";
+import React, { FormEvent, useContext } from "react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { generateSessionToken } from "../../../utilities/sessionUtils";
 import axios from "axios";
 import { error, log } from "console";
 import { UserInterface, Authentication } from "../../interfaces/user";
+import { AllUsersContext } from "../../context/allusers";
 
 
 const LoginComponent = () => {
@@ -20,7 +21,7 @@ const LoginComponent = () => {
   const [allUsers, setAllUsers] = useState<UserInterface[]>([])
   console.log(pass)
 
-
+const  allUserContext = useContext(AllUsersContext)
   const handleLogin = (formSubmit: FormEvent<HTMLFormElement>) => {
     formSubmit.preventDefault();
 
@@ -39,13 +40,16 @@ const LoginComponent = () => {
       auth: object
     }).then(res => {
       console.log('allUsers', res.data);
+      localStorage.setItem("allUsers", JSON.stringify(res.data as UserInterface[]))
+      allUserContext.update(res.data as UserInterface[])
       let filterData = (res.data as UserInterface[]).filter((user) => user.email == object.username)
       console.log('====================================');
       console.log(filterData, object, object.username);
       console.log('====================================');
       alert('Login successful!');
       let authData: Authentication = {
-        auth: object, id: filterData[0].id
+        auth: object, id: filterData[0].id,
+        userName:filterData[0].username
       }
       localStorage.setItem('user', JSON.stringify(authData));
       router.push("/");

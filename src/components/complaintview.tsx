@@ -2,13 +2,15 @@ import axios from "axios";
 import { ComplaintsInterface, CommentsInterface } from "../interfaces/complaintInterface"
 import { Authentication, UserInterface } from "../interfaces/user"
 import { baseUrl } from "./home";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useContext, useEffect, useState } from "react";
 import React from "react";
+import { AllUsersContext } from "../context/allusers";
 
 
 
 
 const CommentComponent = ({ comm }: { comm: CommentsInterface }) => {
+    const allUserContext = useContext(AllUsersContext)
     const [commSender, setCommSender] = useState<UserInterface | null>(null)
     const [postTime, setPostTime] = useState('')
 
@@ -20,41 +22,31 @@ const CommentComponent = ({ comm }: { comm: CommentsInterface }) => {
 
     useEffect(() => {
         console.log(comm, 'djhkllkhfgdfgjhklkjhg')
-        axios.get(`${baseUrl}users/${comm.user}`, {
-            auth: (JSON.parse(localStorage.getItem('user')!) as Authentication).auth
-        }).then(
-            res => {
-                console.log('====================================');
-                console.log(res.data, "userDEeetts");
-                setCommSender(res.data)
-                console.log('====================================');
-            }
-        ).catch(
-            error => {
-                alert('danger')
-                console.log('====================================');
-                console.log(error, "userDeeetsErr");
-                console.log('====================================');
-
-            }
-        )
+       let user =  allUserContext.value.filter(e=> comm.user == e.id )
+        setCommSender(user[0])
+       
 
         getPostTime()
 
     }, [])
 
     return <>
-        <div className="col-lg-10 col-sm-12 d-flex align justify-content-between">
-            <div className="text">{commSender?.username}</div>
+        <div style={{ 
+            marginTop:'5px'
+        }} className="col-lg-10 col-sm-12 d-flex align justify-content-between">
+            <div style={{
+                marginRight:"10px"
+            }} className="text"><b>{commSender?.username} </b></div>
             <div className="text">{postTime}</div>
         </div>
         <div className=" d-flex col-lg-12 flex-wrap">
             <p className="text-post">{comm.comment}</p>
         </div>
+        <hr />
     </>
 }
 
-const ComplaintView = ({ complaint, i }: { complaint: ComplaintsInterface, i: number }) => {
+const ComplaintView = ({ complaint, i, comments }: { complaint: ComplaintsInterface, i: number, comments: CommentsInterface[] }) => {
     const [postSender, setPostSender] = useState<UserInterface | null>(null);
     const [postTime, setPostTime] = useState('')
     const [postcoms, setPostComs] = useState<CommentsInterface[]>([])
@@ -62,8 +54,7 @@ const ComplaintView = ({ complaint, i }: { complaint: ComplaintsInterface, i: nu
 
     useEffect(() => {
         getUsername();
-        getPostTime();
-        getPostComments();
+        getPostTime();  
     },)
 
     const handleComplaintComment = (_complaintId: string) => (formSubmit: React.FormEvent<HTMLFormElement>) => {
@@ -89,19 +80,12 @@ const ComplaintView = ({ complaint, i }: { complaint: ComplaintsInterface, i: nu
 
         })
     }
+    const allUserContext = useContext(AllUsersContext)
     function getUsername() {
         const userId = complaint.user;
-        axios.get(`${baseUrl}users/${userId}`, {
-            auth: (JSON.parse(localStorage.getItem('user')!) as Authentication).auth,
-        }).then(
-            res => {
-                setPostSender(res.data as UserInterface);
-            }
-        ).catch(
-            error => {
-                console.log('failed to get username')
-            }
-        )
+        let user =  allUserContext.value.filter(e=> userId == e.id )
+        setPostSender(user[0])
+    
 
     }
     function getPostTime() {
@@ -110,22 +94,7 @@ const ComplaintView = ({ complaint, i }: { complaint: ComplaintsInterface, i: nu
         setPostTime(formattedDateTime)
     }
 
-    function getPostComments() {
-        axios.get(`${baseUrl}complaints/${complaint.id}/comments`, {
-            auth: (JSON.parse(localStorage.getItem('user')!) as Authentication).auth
-        }).then(
-            res => {
-                setPostComs(res.data)
-            }
-        ).catch(
-            error => {
-                console.log('====================================');
-                console.log(error, "complaint comments error");
-                console.log('====================================');
-               
-            }
-        )
-    }
+    
 
 
 
@@ -150,7 +119,7 @@ const ComplaintView = ({ complaint, i }: { complaint: ComplaintsInterface, i: nu
                     <hr />
                     <div className="col-lg-10 ms-lg-auto d-flex align-items-start">
                         <div className="d-flex flex-column align-items-start">
-                            {postcoms.map((comm, ii) =>
+                            {comments.map((comm, ii) =>
                                 <React.Fragment key={`comment${ii}`}>
                                     <CommentComponent comm={comm} />
                                 </React.Fragment>)}
