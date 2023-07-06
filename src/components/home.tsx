@@ -12,16 +12,43 @@ export const baseUrl = "https://www.muganedev.tech/api/v1/"
 
 const HomeComponent = () => {
     const [isSidebarActive, setIsSidebarActive] = useState(false);
-    const [allComplaints, setAllComplaints] = useState<ComplaintsInterface[]>()
+    const [allComplaints, setAllComplaints] = useState<ComplaintsInterface[]>([])
     const [postSender, setPostSender] = useState<UserInterface>()
     const [postTime, setPostTime] = useState('');
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('')
+    // const [tokens, setUserTokens] = useState(0);
 
 
     const handleSidebarToggle = () => {
         setIsSidebarActive(!isSidebarActive);
     };
+
+
+
+    useEffect(() => {
+        getComplaintsAndComments();
+    })
+
+    // const uId = (JSON.parse(localStorage.getItem('user')!) as Authentication).id;
+    // console.log('====================================');
+    // console.log(uId, "uuiiiuuuiiuuii");
+    // console.log('====================================');
+
+    // axios.get(`${baseUrl}users/uId/tokens`, {
+    //     auth: (JSON.parse(localStorage.getItem('user')!) as Authentication).auth
+    // }).then(
+    //     res => {
+    //         console.log(res.data);
+    //         setUserTokens(res.data)
+    //         console.log(tokens, "userTokens");
+    //     }
+    // ).catch(
+    //     error => {
+    //         console.log(error, "userTokens error");
+
+    //     }
+    // )
 
 
     const getComplaintsAndComments = () => {
@@ -31,12 +58,11 @@ const HomeComponent = () => {
             res => {
                 console.log(res.data);
                 setAllComplaints(res.data as ComplaintsInterface[])
-                console.log(allComplaints, "allComplaints");
+                // console.log(allComplaints, "allComplaints");
             }
         ).catch(
             error => {
                 console.log(error, "allcomplaints error");
-
             }
         )
 
@@ -58,16 +84,14 @@ const HomeComponent = () => {
         if (allComplaints) {
             const userId = allComplaints[0]?.user;
             axios.get(`${baseUrl}users/${userId}`, {
-                auth: {
-                    username: "snzungula@gmail.com",
-                    password: "foundation25"
-                }
+                auth: (JSON.parse(localStorage.getItem('user')!) as Authentication).auth
             }).then(
                 res => {
                     setPostSender(res.data as UserInterface);
                 }
             ).catch(
                 error => {
+                    console.log(error, "errrPostSender")
 
                 }
             )
@@ -79,19 +103,12 @@ const HomeComponent = () => {
             const formattedDateTime = new Date(timestamp).toLocaleString();
             setPostTime(formattedDateTime)
         }
-
     }
 
-    useEffect(() => {
-
-        getComplaintsAndComments()
-        ///get the user who created Post and formatTime of post
-
-
-    }, []);
 
     const handleComplaintData = (formSubmit: FormEvent<HTMLFormElement>) => {
         formSubmit.preventDefault();
+
 
         let fd = new FormData(formSubmit.currentTarget);
         axios.post(`${baseUrl}complaints/create`, fd, {
@@ -100,48 +117,20 @@ const HomeComponent = () => {
                 'Content-Type': 'multipart/form-data'
             }
         }).then(res => {
-            console.log('====================================');
-            console.log(res.data, 'newcomplaint');
-            console.log('====================================');
+            alert('postsent');
+           
         }).catch(error => {
-            console.log('====================================');
-            console.log(error, "myposterror");
-            console.log('====================================');
+            console.log("post not sent")
+           
         })
 
 
     }
 
-    const handleComplaintComment = (formSubmit: FormEvent<HTMLFormElement>) => {
-        formSubmit.preventDefault();
-
-        let fd = new FormData(formSubmit.currentTarget);
-        axios.post(`${baseUrl}complaints//create`, fd, {
-            auth: (JSON.parse(localStorage.getItem('user')!) as Authentication).auth,
-        
-        }).then(res => {
-            console.log('====================================');
-            console.log(res.data, 'newcomment');
-            console.log('====================================');
-        }).catch(error => {
-            console.log('====================================');
-            console.log(error, "commenterror");
-            console.log('====================================');
-        })
-    }
-
-
-
-
-
-
-
-    return <>
-
-        <div className="wrapper">
+    return <div className="wrapper">
             <nav id="sidebar" className={isSidebarActive ? 'active' : ''}>
                 <div className="sidebar-header">
-                    <h3>Complaint Management System</h3>
+                    <h6>Complaint Management System</h6>
                 </div>
                 <ul className="list-unstyled components">
                     <li className="active">
@@ -180,29 +169,6 @@ const HomeComponent = () => {
                         allComplaints?.map((complaint, i) => <>
 
                             <ComplaintView complaint={complaint} i={i} />
-                            <div className="modal" id="exampleModal" tabIndex={-1} role="dialog" aria-labelledby="exampleModalLabel">
-                                <form onSubmit={handleComplaintComment}>
-                                <div className="modal-dialog modal-dialog-centered" role="document">
-                                    <div className="modal-content">
-                                        <div className="modal-header">
-                                            <h5 className="modal-title" id="exampleModalLongTitle">Comment</h5>
-                                            <button type="button" className="close" data-bs-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>
-                                        <div className="modal-body">
-                                            <textarea className="modalTextArea" name="comment" />
-                                            <input value={complaint.id}  name="complaint" hidden />
-                                            <input name="user" value={(JSON.parse(localStorage.getItem('user')!) as Authentication).id} hidden />
-                                        </div>
-                                        <div className="modal-footer">
-                                            <button type="button" className="btn btn-danger btn-teal btn-sm" data-bs-dismiss="modal">Cancel</button>
-                                            <button type="submit" className="btn btn-primary btn-teal btn-sm">Post</button>
-                                        </div>
-                                    </div>
-                                </div>
-                                </form>
-                            </div>
 
                         </>
                         )}
@@ -211,9 +177,6 @@ const HomeComponent = () => {
 
                 </div >
             </div >
-
-
-
 
             <div className="modal" id="complaintModal" tabIndex={-1} role="dialog" aria-labelledby="exampleModalLabel">
                 <form onSubmit={handleComplaintData}>
@@ -246,11 +209,6 @@ const HomeComponent = () => {
                 </form>
             </div>
         </div >
-
-
-
-    </>
-
 }
 
 export default HomeComponent;

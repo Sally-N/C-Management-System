@@ -1,39 +1,61 @@
-import React, { ChangeEvent } from "react";
+import React, { ChangeEvent, FormEvent } from "react";
 import { useState, useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faImage } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import axios from "axios";
 import { ComplaintsInterface } from "../interfaces/complaintInterface";
 import { Authentication, UserInterface } from "../interfaces/user";
 import { generateSessionToken } from "../../utilities/sessionUtils";
+import ComplaintView from "./complaintview";
+export const baseUrl = "https://www.muganedev.tech/api/v1/"
 
 
 
-const MyComplaintsComponent = () => {
-    const baseUrl = "https://www.muganedev.tech/api/v1/"
+const MyComplaintComponent = () => {
     const [isSidebarActive, setIsSidebarActive] = useState(false);
-    const [allComplaints, setAllComplaints] = useState<ComplaintsInterface[]>()
+    const [myComplaints, setMyComplaints] = useState<ComplaintsInterface[]>([])
     const [postSender, setPostSender] = useState<UserInterface>()
     const [postTime, setPostTime] = useState('');
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('')
-
-    const sessionToken = localStorage.getItem('sessionToken');
+    const [modalOpen, setIsModalOpen] = useState(true)
+    
 
     const handleSidebarToggle = () => {
         setIsSidebarActive(!isSidebarActive);
     };
 
+
+
     useEffect(() => {
-        ///todo
-        axios.get(`${baseUrl}users/${ (JSON.parse(localStorage.getItem('user')!)as Authentication).id}/complaints/`, {
-            auth: (JSON.parse(localStorage.getItem('user')!)as Authentication).auth
+        getComplaintsAndComments();
+    })
+    
+
+
+    const getComplaintsAndComments = () => {
+        const user = (JSON.parse(localStorage.getItem('user')!)as Authentication);
+        const uId = user.id;
+        axios.get(`${baseUrl}users/${uId}/complaints`, {
+            auth: (JSON.parse(localStorage.getItem('user')!) as Authentication).auth
         }).then(
             res => {
                 console.log(res.data);
-                setAllComplaints(res.data as ComplaintsInterface[])
-                console.log(allComplaints, "allComplaints");
+                setMyComplaints(res.data as ComplaintsInterface[])
+                // console.log(allComplaints, "allComplaints");
+            }
+        ).catch(
+            error => {
+                console.log(error, "allcomplaints error");
+            }
+        )
+
+        axios.get(`${baseUrl}comments`, {
+            auth: (JSON.parse(localStorage.getItem('user')!) as Authentication).auth
+        }).then(
+            res => {
+                console.log('====================================');
+                console.log(res.data, "comments");
+                console.log('====================================');
             }
         ).catch(
             error => {
@@ -42,48 +64,63 @@ const MyComplaintsComponent = () => {
             }
         )
 
-        ///get the user who created Post and formatTime of post
-        if (allComplaints) {
-            const userId = allComplaints[0]?.user;
+        if (myComplaints) {
+            const userId = myComplaints[0]?.user;
             axios.get(`${baseUrl}users/${userId}`, {
-                auth: {
-                    username: "snzungula@gmail.com",
-                    password: "foundation25"
-                }
+                auth: (JSON.parse(localStorage.getItem('user')!) as Authentication).auth
             }).then(
                 res => {
                     setPostSender(res.data as UserInterface);
                 }
             ).catch(
                 error => {
+                    console.log(error, "errrPostSender")
 
                 }
             )
-
         }
-        if (allComplaints) {
-            const timestamp = allComplaints[0]?.created_at;
+
+
+        if (myComplaints) {
+            const timestamp = myComplaints[0]?.created_at;
             const formattedDateTime = new Date(timestamp).toLocaleString();
             setPostTime(formattedDateTime)
         }
-
-    }, [allComplaints]);
-
+    }
 
 
+    const handleComplaintData = (formSubmit: FormEvent<HTMLFormElement>) => {
+        formSubmit.preventDefault();
 
-    return <>
 
-        <div className="wrapper">
+        let fd = new FormData(formSubmit.currentTarget);
+        axios.post(`${baseUrl}complaints/create`, fd, {
+            auth: (JSON.parse(localStorage.getItem('user')!) as Authentication).auth,
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        }).then(res => {
+            alert('complaint sent');
+            setIsModalOpen(false);
+           
+        }).catch(error => {
+            console.log("post not sent")
+           
+        })
+
+
+    }
+
+    return <div className="wrapper">
             <nav id="sidebar" className={isSidebarActive ? 'active' : ''}>
                 <div className="sidebar-header">
-                    <h3>Complaint Management System</h3>
+                    <h6>Complaint Management System</h6>
                 </div>
                 <ul className="list-unstyled components">
-                    <li className="active">
+                    <li>
                         <Link href="/">Home</Link>
                     </li>
-                    <li>
+                    <li className="active">
                         <Link href="/mycomplaints">My Complaints</Link>
                     </li>
                     <li>
@@ -109,69 +146,13 @@ const MyComplaintsComponent = () => {
                         </div>
                     </div>
                 </nav>
-                {/* <div className="mb-2 fixedMenuFix ">
-                    <div className="col-lg-3 col-sm-12 d-flex align justify-content-between ">
-                        <div className="text">WendyWaweru:</div>
-                        <div className="text">12.11pm</div>
-                    </div>
-                    <form>
-                        <textarea id="postField" className="form-control" placeholder="Post a complaint" />
-                        <div className="image-input col-lg-1">
 
-                            <img className="image-preview" src="" alt="Preview" />
-                            <span className="change-image">Choose different image</span>
-
-                            <input type="file" accept="image/*" id="imageInput" />
-                            <label htmlFor="imageInput" className="image-button">
-                                <FontAwesomeIcon icon={faImage} className="iconImage" />
-                                Choose Image
-                            </label>
-
-                        </div>
-                        <button className="btn btn-primary btn-teal btn-sm" >Cancel</button>
-                        <button className="btn btn-primary btn-teal btn-sm">Post</button>
-                    </form>
-                </div> */}
 
                 <div className="mb-2 fixedMenuFix">
                     {
-                        allComplaints?.map((complaint, i) => <>
+                        myComplaints?.map((complaint, i) => <>
 
-                            <div className="row d-flex align-items-center justify-content-center">
-                                <div className="col-lg-12">
-                                    <div className="card" key={`complaint${i}`}>
-                                        <div className="d-flex p-2 px-3 justify-content-between">
-                                            <div className="col-lg-3 col-sm-12 d-flex align justify-content-between ">
-                                                <div className="text">{postSender?.username}</div>
-                                                <div className="text">{postTime}</div>
-                                            </div>
-                                            <div className="">
-                                                <button role="button" className="form-control btn btn-primary btn-teal rounded-pill submit px-3" data-bs-toggle="modal" data-bs-target="#exampleModal">Comment</button>
-                                            </div>
-                                        </div>
-                                        <div className="p-2">
-                                            <p className="text-post">{complaint.description}</p>
-                                            <hr />
-                                            <div className="imgSection col-lg-12 col-sm-12 d-flex flex-wrap">
-                                                <img src={complaint.image} className="col-lg-3 col-sm-12 img-fluid" />
-                                            </div>
-                                            <hr />
-                                            <div className="col-lg-10 ms-lg-auto d-flex align-items-start">
-                                                <div className="d-flex flex-column align-items-start">
-                                                    <div className="col-lg-10 col-sm-12 d-flex align justify-content-between">
-                                                        <div className="text">Jleo</div>
-                                                        <div className="text">12.11pm</div>
-                                                    </div>
-                                                    <div className=" d-flex col-lg-12">
-                                                        <p className="text-post">We&apos;ll Check it out.</p>
-                                                    </div>
-
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            <ComplaintView complaint={complaint} i={i} />
 
                         </>
                         )}
@@ -181,58 +162,37 @@ const MyComplaintsComponent = () => {
                 </div >
             </div >
 
-
-
-            <div className="modal" id="exampleModal" tabIndex={-1} role="dialog" aria-labelledby="exampleModalLabel">
-                <div className="modal-dialog modal-dialog-centered" role="document">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title" id="exampleModalLongTitle">Comment</h5>
-                            <button type="button" className="close" data-bs-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div className="modal-body">
-                            <textarea className="modalTextArea" />
-                        </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-danger btn-teal btn-sm" data-bs-dismiss="modal">Cancel</button>
-                            <button type="button" className="btn btn-primary btn-teal btn-sm">Post</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <div className="modal" id="complaintModal" tabIndex={-1} role="dialog" aria-labelledby="exampleModalLabel">
-                <div className="modal-dialog modal-dialog-centered" role="document">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title" id="exampleModalLongTitle">Complaint Form</h5>
-                            <button type="button" className="close" data-bs-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div className="modal-body">
-                            <div className="form-group">
-                                <label htmlFor="recipient-name" className="col-form-label">Title:</label>
-                                <input type="text" className="form-control" id="recipient-name" 
-                                value={title} onChange={(e) => setTitle(e.target.value)}/>
+                <form onSubmit={handleComplaintData}>
+                    <div className="modal-dialog modal-dialog-centered" role="document">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title" id="exampleModalLongTitle">Complaint Form</h5>
+                                <button type="button" className="close" data-bs-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
                             </div>
-                            <textarea className="modalTextArea" value={description}  onChange={(e) => setDescription(e.target.value)} />
-                            <input type="file"  />
-                        </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-danger btn-teal btn-sm" data-bs-dismiss="modal">Cancel</button>
-                            <button type="button" className="btn btn-primary btn-teal btn-sm">Post</button>
+                            <div className="modal-body">
+                                <div className="form-group">
+                                    <label htmlFor="recipient-name" className="col-form-label">Title:</label>
+                                    <input type="text" className="form-control" name="title" id="recipient-name"
+                                        value={title} onChange={(e) => setTitle(e.target.value)} />
+                                </div>
+                                <textarea className="modalTextArea" name="description" value={description} onChange={(e) => setDescription(e.target.value)} />
+                                <input type="file" name="image" />
+                                <input type="text" name="status" value="pending" hidden />
+                                <input type="text" name="user" value={(JSON.parse(localStorage.getItem('user')!) as Authentication).id} hidden />
+
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-danger btn-teal btn-sm" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" className="btn btn-primary btn-teal btn-sm">Post</button>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </form>
             </div>
         </div >
-
-
-
-    </>
-
 }
 
-export default MyComplaintsComponent;
+export default MyComplaintComponent;
