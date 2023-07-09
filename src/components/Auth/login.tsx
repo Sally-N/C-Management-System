@@ -31,9 +31,8 @@ const  allUserContext = useContext(AllUsersContext)
       object[key] = value;
     });
     console.log('====================================');
-    console.log(object);
+    console.log(object, 'obj');
     console.log('====================================');
-    const savedUserDetailsString = localStorage.getItem('user');
 
 
     axios.get(`${baseUrl}users/`, {
@@ -41,18 +40,24 @@ const  allUserContext = useContext(AllUsersContext)
     }).then(res => {
       console.log('allUsers', res.data);
       localStorage.setItem("allUsers", JSON.stringify(res.data as UserInterface[]))
+      console.log(localStorage)
       allUserContext.update(res.data as UserInterface[])
       let filterData = (res.data as UserInterface[]).filter((user) => user.email == object.username)
       console.log('====================================');
-      console.log(filterData, object, object.username);
+      console.log(filterData, object,  object.username, "filterData");
       console.log('====================================');
-      alert('Login successful!');
-      let authData: Authentication = {
-        auth: object, id: filterData[0].id,
-        userName:filterData[0].username
+      if (filterData.length > 0) {
+        alert('Login successful!');
+        let authData: Authentication = {
+          auth: object,
+          id: filterData[0].id,
+          userName: filterData[0].username
+        }
+        localStorage.setItem('user', JSON.stringify(authData));
+        router.push("/");
+      } else {
+        alert('User not found!');
       }
-      localStorage.setItem('user', JSON.stringify(authData));
-      router.push("/");
     }).catch(error => {
       console.log('allUsersError', error)
     })
