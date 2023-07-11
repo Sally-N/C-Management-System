@@ -44,7 +44,7 @@ const SignupComponent = () => {
             localStorage.setItem('user', JSON.stringify(formData));
             console.log(localStorage, 'reg')
             console.log(response, "data");
-            // window.location.href = "/login";
+            window.location.href = "/login";
         } catch (error) {
             console.log(error);
         }

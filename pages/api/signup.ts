@@ -12,11 +12,11 @@ export default async function handler(req: { body: { username: any; email: any; 
             },
             body: JSON.stringify({ username, email, password })
         });
-        const data = await response.json();
+    const data = await response.json();
    console.log('====================================');
    console.log(res.status(200).json(data), 'apipage');
    console.log('====================================');        
     } catch (error) {
-        res.status(500).json({ message: 'Error submitting contact form' });
+        res.status(500).json({ message: 'Error submitting registration form' });
     }
 }

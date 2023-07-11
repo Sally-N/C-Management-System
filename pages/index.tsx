@@ -11,7 +11,7 @@ const Home: NextPage = () => {
   return (
    <>
    {
-        localStorage.getItem('user') == null? <LoginPage  />   :   <HomeComponent />
+        localStorage.getItem('user') == null ? <LoginPage  />   :   <HomeComponent />
    }
    </>
 

@@ -2,7 +2,7 @@ import axios from "axios";
 import { ComplaintsInterface, CommentsInterface } from "../interfaces/complaintInterface"
 import { Authentication, UserInterface } from "../interfaces/user"
 import { baseUrl } from "./home";
-import { FormEvent, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import React from "react";
 import { AllUsersContext } from "../context/allusers";
 
@@ -14,6 +14,7 @@ const CommentComponent = ({ comm }: { comm: CommentsInterface }) => {
     const [commSender, setCommSender] = useState<UserInterface | null>(null)
     const [postTime, setPostTime] = useState('')
 
+
     function getPostTime() {
         const timestamp = comm?.created_at;
         const formattedDateTime = new Date(timestamp).toLocaleString();
@@ -22,20 +23,20 @@ const CommentComponent = ({ comm }: { comm: CommentsInterface }) => {
 
     useEffect(() => {
         console.log(comm, 'djhkllkhfgdfgjhklkjhg')
-       let user =  allUserContext.value.filter(e=> comm.user == e.id )
+        let user = allUserContext.value.filter(e => comm.user == e.id)
         setCommSender(user[0])
-       
+
 
         getPostTime()
 
     }, [])
 
     return <>
-        <div style={{ 
-            marginTop:'5px'
+        <div style={{
+            marginTop: '5px'
         }} className="col-lg-10 col-sm-12 d-flex align justify-content-between">
             <div style={{
-                marginRight:"10px"
+                marginRight: "10px"
             }} className="text"><b>{commSender?.username} </b></div>
             <div className="text">{postTime}</div>
         </div>
@@ -50,11 +51,13 @@ const ComplaintView = ({ complaint, i, comments }: { complaint: ComplaintsInterf
     const [postSender, setPostSender] = useState<UserInterface | null>(null);
     const [postTime, setPostTime] = useState('')
     const [postcoms, setPostComs] = useState<CommentsInterface[]>([])
+    const [isCurrentUserPostSender, setIsCurrentUserPostSender] = useState(false);
 
+    const loggedInUserId = (JSON.parse(localStorage.getItem('user')!) as Authentication).id;
 
     useEffect(() => {
         getUsername();
-        getPostTime();  
+        getPostTime();
     },)
 
     const handleComplaintComment = (_complaintId: string) => (formSubmit: React.FormEvent<HTMLFormElement>) => {
@@ -83,9 +86,13 @@ const ComplaintView = ({ complaint, i, comments }: { complaint: ComplaintsInterf
     const allUserContext = useContext(AllUsersContext)
     function getUsername() {
         const userId = complaint.user;
-        let user =  allUserContext.value.filter(e=> userId == e.id )
+        let user = allUserContext.value.filter(e => userId == e.id)
         setPostSender(user[0])
-    
+        setIsCurrentUserPostSender(postSender?.id === loggedInUserId);
+        console.log('====================================');
+        console.log(isCurrentUserPostSender);
+        console.log('====================================');
+
 
     }
     function getPostTime() {
@@ -94,7 +101,7 @@ const ComplaintView = ({ complaint, i, comments }: { complaint: ComplaintsInterf
         setPostTime(formattedDateTime)
     }
 
-    
+
 
 
 
@@ -108,6 +115,11 @@ const ComplaintView = ({ complaint, i, comments }: { complaint: ComplaintsInterf
                     </div>
                     <div className="">
                         <button role="button" className="form-control btn btn-primary btn-teal rounded-pill submit px-3" data-bs-toggle="modal" data-bs-target={`#exampleModal${complaint.id}`}>Comment</button>
+                        {isCurrentUserPostSender && (
+                            <button className="btn btn-danger btn-teal btn-sm">
+                                Delete
+                            </button>
+                        )}
                     </div>
                 </div>
                 <div className="p-2 d-flex flex-wrap">
