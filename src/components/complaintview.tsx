@@ -7,8 +7,6 @@ import React from "react";
 import { AllUsersContext } from "../context/allusers";
 
 
-
-
 const CommentComponent = ({ comm }: { comm: CommentsInterface }) => {
     const allUserContext = useContext(AllUsersContext)
     const [commSender, setCommSender] = useState<UserInterface | null>(null)

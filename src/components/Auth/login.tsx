@@ -33,57 +33,83 @@ const LoginComponent = () => {
     console.log(object, 'obj');
     console.log('====================================');
 
-    
+
     // console.log( `Basic ${JSON.stringify(object)}`)
 
 
-  //   axios.get(`${baseUrl}users/`, {
-  //     auth: object
-  //   }).then(res => {
-  //     console.log('allUsers', res.data);
-  //     localStorage.setItem("allUsers", JSON.stringify(res.data as UserInterface[]))
-  //     console.log(localStorage)
-  //     allUserContext.update(res.data as UserInterface[])
-  //     let filterData = (res.data as UserInterface[]).filter((user) => user.email == object.username)
-  //     console.log('====================================');
-  //     console.log(filterData, object,  object.username, "filterData");
-  //     console.log('====================================');
-  //     if (filterData.length > 0) {
-  //       alert('Login successful!');
-  //       let authData: Authentication = {
-  //         auth: object,
-  //         id: filterData[0].id,
-  //         userName: filterData[0].username
-  //       }
-  //       localStorage.setItem('user', JSON.stringify(authData));
-  //       router.push("/");
-  //     } else {
-  //       alert('User not found!');
-  //     }
-  //   }).catch(error => {
-  //     console.log('allUsersError', error)
-  //   })
-  // }
+    //   axios.get(`${baseUrl}users/`, {
+    //     auth: object
+    //   }).then(res => {
+    //     console.log('allUsers', res.data);
+    //     localStorage.setItem("allUsers", JSON.stringify(res.data as UserInterface[]))
+    //     console.log(localStorage)
+    //     allUserContext.update(res.data as UserInterface[])
+    //     let filterData = (res.data as UserInterface[]).filter((user) => user.email == object.username)
+    //     console.log('====================================');
+    //     console.log(filterData, object,  object.username, "filterData");
+    //     console.log('====================================');
+    //     if (filterData.length > 0) {
+    //       alert('Login successful!');
+    //       let authData: Authentication = {
+    //         auth: object,
+    //         id: filterData[0].id,
+    //         userName: filterData[0].username
+    //       }
+    //       localStorage.setItem('user', JSON.stringify(authData));
+    //       router.push("/");
+    //     } else {
+    //       alert('User not found!');
+    //     }
+    //   }).catch(error => {
+    //     console.log('allUsersError', error)
+    //   })
+    // }
 
-console.log('====================================');
+    console.log('====================================');
 
-console.log( `Basic ${btoa(`${object.username}:${object.password}`)}`);
-console.log( `Basic ${Buffer.from(`${object.username}:${object.password}`).toString('base64')}`
-)
-console.log('====================================');
-console.log(`${object.username}:${object.password}`, 'try');
+    console.log(`Basic ${btoa(`${object.username}:${object.password}`)}`);
+    console.log(`Basic ${Buffer.from(`${object.username}:${object.password}`).toString('base64')}`
+    )
+    console.log('====================================');
+    console.log(`${object.username}:${object.password}`, 'try');
 
 
- try {
-      const response =  fetch('/api/allusers', {
-      });  
-      const data = (await response).json
+    try {
+      const response = await fetch('/api/allusers', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(object)
+      });
+      const data = await response.json();
+      setDatares(data);
       console.log('====================================');
-      console.log(data, 'data');      
-      console.log('====================================');      
-  } catch (error) {
+      console.log(datares, 'data');
+      console.log('====================================');
+      localStorage.setItem("allUsers", JSON.stringify(data as UserInterface[]))
+      console.log(localStorage)
+      allUserContext.update(data as UserInterface[])
+      let filterData = (data as UserInterface[]).filter((user) => user.email == object.username)
+      console.log('====================================');
+      console.log(filterData, object, object.username, "filterData");
+      console.log('====================================');
+      if (filterData.length > 0) {
+        alert('Login successful!');
+        let authData: Authentication = {
+          auth: object,
+          id: filterData[0].id,
+          userName: filterData[0].username
+        }
+        localStorage.setItem('user', JSON.stringify(authData));
+        router.push("/");
+      } else {
+        alert('User not found!');
+      }
+
+    } catch (error) {
       console.log(error, 'logintsx error');
-  }
+    }
     // .then(res => {
     //   console.log('allUsers', res.data);
     //   localStorage.setItem("allUsers", JSON.stringify(res.data as UserInterface[]))
@@ -108,13 +134,13 @@ console.log(`${object.username}:${object.password}`, 'try');
     // }).catch(error => {
     //   console.log('allUsersError', error)
     // })
-  
+
 
     // try {
     //   const response = await axios.get(`${baseUrl}users/`, {
     //     auth: object
     //   });
-    
+
     //   if (response.status === 200) {
     //     const data = response.data;
     //     console.log(data); // Process the response data
