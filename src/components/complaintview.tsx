@@ -23,8 +23,6 @@ const CommentComponent = ({ comm }: { comm: CommentsInterface }) => {
         console.log(comm, 'djhkllkhfgdfgjhklkjhg')
         let user = allUserContext.value.filter(e => comm.user == e.id)
         setCommSender(user[0])
-
-
         getPostTime()
 
     }, [])
@@ -49,7 +47,7 @@ const ComplaintView = ({ complaint, i, comments }: { complaint: ComplaintsInterf
     const [postSender, setPostSender] = useState<UserInterface | null>(null);
     const [postTime, setPostTime] = useState('')
     const [postcoms, setPostComs] = useState<CommentsInterface[]>([])
-    const [isCurrentUserPostSender, setIsCurrentUserPostSender] = useState(false);
+    // const [isCurrentUserPostSender, setIsCurrentUserPostSender] = useState(false);
 
     const loggedInUserId = (JSON.parse(localStorage.getItem('user')!) as Authentication).id;
 
@@ -86,10 +84,10 @@ const ComplaintView = ({ complaint, i, comments }: { complaint: ComplaintsInterf
         const userId = complaint.user;
         let user = allUserContext.value.filter(e => userId == e.id)
         setPostSender(user[0])
-        setIsCurrentUserPostSender(postSender?.id === loggedInUserId);
-        console.log('====================================');
-        console.log(isCurrentUserPostSender);
-        console.log('====================================');
+        // setIsCurrentUserPostSender(postSender?.id === loggedInUserId);
+        // console.log('====================================');
+        // console.log(isCurrentUserPostSender);
+        // console.log('====================================');
 
 
     }
@@ -113,11 +111,11 @@ const ComplaintView = ({ complaint, i, comments }: { complaint: ComplaintsInterf
                     </div>
                     <div className="">
                         <button role="button" className="form-control btn btn-primary btn-teal rounded-pill submit px-3" data-bs-toggle="modal" data-bs-target={`#exampleModal${complaint.id}`}>Comment</button>
-                        {isCurrentUserPostSender && (
+                        {/* {isCurrentUserPostSender && (
                             <button className="btn btn-danger btn-teal btn-sm">
                                 Delete
                             </button>
-                        )}
+                        )} */}
                     </div>
                 </div>
                 <div className="p-2 d-flex flex-wrap">
@@ -151,7 +149,7 @@ const ComplaintView = ({ complaint, i, comments }: { complaint: ComplaintsInterf
                         </div>
                         <div className="modal-body">
                             <textarea className="modalTextArea" name="comment" />
-                            <input value={complaint.id} name="complaint" />
+                            <input value={complaint.id} name="complaint" hidden />
                             <input name="user" value={(JSON.parse(localStorage.getItem('user')!) as Authentication).id} hidden />
                         </div>
                         <div className="modal-footer">
