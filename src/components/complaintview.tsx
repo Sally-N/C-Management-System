@@ -97,10 +97,6 @@ const ComplaintView = ({ complaint, i, comments }: { complaint: ComplaintsInterf
         setPostTime(formattedDateTime)
     }
 
-
-
-
-
     return <> <div className="row d-flex align-items-center justify-content-center">
         <div className="col-lg-12" key={`complaint${i}`}>
             <div className="card" >
