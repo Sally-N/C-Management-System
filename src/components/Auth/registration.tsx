@@ -1,6 +1,5 @@
 import React from "react";
-import { useState, useEffect, FormEvent } from "react";
-import axios from "axios"
+import { useState, FormEvent } from "react";
 import { RegisterInterface } from "../../interfaces/register";
 import Link from "next/link";
 
@@ -10,7 +9,6 @@ const SignupComponent = () => {
     const [cpassword, setConfirmPassword] = useState('');
     const [username, setUserName] = useState('')
     const [email, setEmail] = useState('')
-    const [result, setResult] = useState<any>();
     const [confirmPasswordError, setConfirmPasswordError] = useState('');
     const baseUrl = "https://www.muganedev.tech/api/v1/"
 
@@ -18,21 +16,12 @@ const SignupComponent = () => {
 
         submit.preventDefault()
         setConfirmPasswordError('');
-
         if (password !== cpassword) {
             alert("not match")
             return;
         }
-
         const formData = {username, email, password}
-
-        // const formData = new FormData();
-        // formData.append('username', username);
-        // formData.append('email', email);
-        // formData.append('password', password);
-        // console.log(formData, "formdata")
         console.log(formData, 'fd')
-
         try {
             const response = fetch('/api/signup', {
                 method: "POST",

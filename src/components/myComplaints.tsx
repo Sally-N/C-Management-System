@@ -34,23 +34,26 @@ const MyComplaintComponent = () => {
 
 
 
-    const getComplaintsAndComments = () => {
+    const getComplaintsAndComments = async() => {
         const user = (JSON.parse(localStorage.getItem('user')!)as Authentication);
         const uId = user.id;
-        axios.get(`${baseUrl}users/${uId}/complaints`, {
-            auth: (JSON.parse(localStorage.getItem('user')!) as Authentication).auth
-        }).then(
-            res => {
-                console.log(res.data);
-                setMyComplaints(res.data as ComplaintsInterface[])
-                // console.log(allComplaints, "allComplaints");
+ 
+            try {
+                const response = await fetch('/api/myComplaints', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ auth: user.auth, uId }), 
+                });
+                console.log(JSON.stringify({ auth: user.auth, uId }), 'nn')
+                const data = await response.json();
+                setMyComplaints(data as ComplaintsInterface[])
+            } catch (error) {
+                console.log(error, 'allCompliantshome error');
             }
-        ).catch(
-            error => {
-                console.log(error, "allcomplaints error");
-            })
 
-            
+        }
 
 
         // if (myComplaints) {
@@ -58,7 +61,21 @@ const MyComplaintComponent = () => {
         //     const formattedDateTime = new Date(timestamp).toLocaleString();
         //     setPostTime(formattedDateTime)
         // }
-    }
+    
+
+    // axios.get(`${baseUrl}users/${uId}/complaints`, {
+    //     auth: (JSON.parse(localStorage.getItem('user')!) as Authentication).auth
+    // }).then(
+    //     res => {
+    //         console.log(res.data);
+    //         setMyComplaints(res.data as ComplaintsInterface[])
+    //         // console.log(allComplaints, "allComplaints");
+    //     }
+    // ).catch(
+    //     error => {
+    //         console.log(error, "allcomplaints error");
+    //     })
+    //     const user = JSON.parse(localStorage.getItem('user')!) as Authentication;
 
 
     const handleComplaintData = (formSubmit: FormEvent<HTMLFormElement>) => {
