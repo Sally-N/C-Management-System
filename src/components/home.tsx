@@ -56,26 +56,42 @@ const HomeComponent = () => {
     }
 
 
-    const handleComplaintData = (formSubmit: FormEvent<HTMLFormElement>) => {
+    const handleComplaintData = async (formSubmit: FormEvent<HTMLFormElement>) => {
         formSubmit.preventDefault();
-
-
+        const userAuth = (JSON.parse(localStorage.getItem('user')!) as Authentication).auth;
+        console.log(userAuth);
         let fd = new FormData(formSubmit.currentTarget);
-        axios.post(`${baseUrl}complaints/create`, fd, {
-            auth: (JSON.parse(localStorage.getItem('user')!) as Authentication).auth,
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        }).then(res => {
-            alert('postsent');
+        fd.append("username", userAuth.username);
+        fd.append("password", userAuth.password);
+        console.log(fd)
+        // fd.append('auth', JSON.stringify(user.auth));
 
-        }).catch(error => {
-            console.log("post not sent")
-
-        })
-
+        try {
+            const response = await fetch('api/createcomplaint', {
+                method: 'POST',
+                body: fd
+            });
+            const data = await response.json();
+            alert('complaint created');
+            console.log(data)
+        } catch (error) {
+            console.log(error, "complaint creation error");
+            alert('complaint failed to send');
+        }
 
     }
+    // axios.post(`${baseUrl}complaints/create`, fd, {
+    //     auth: (JSON.parse(localStorage.getItem('user')!) as Authentication).auth,
+    //     headers: {
+    //         'Content-Type': 'multipart/form-data'
+    //     }
+    // }).then(res => {
+    //     alert('postsent');
+
+    // }).catch(error => {
+    //     console.log("post not sent")
+
+    // })
 
     return <div className="wrapper">
         <Nav option="home" isSidebarActive={isSidebarActive} />

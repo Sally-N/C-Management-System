@@ -45,11 +45,7 @@ const CommentComponent = ({ comm }: { comm: CommentsInterface }) => {
 
 const ComplaintView = ({ complaint, i, comments }: { complaint: ComplaintsInterface, i: number, comments: CommentsInterface[] }) => {
     const [postSender, setPostSender] = useState<UserInterface | null>(null);
-    const [postTime, setPostTime] = useState('')
-    const [postcoms, setPostComs] = useState<CommentsInterface[]>([])
-    // const [isCurrentUserPostSender, setIsCurrentUserPostSender] = useState(false);
-
-    const loggedInUserId = (JSON.parse(localStorage.getItem('user')!) as Authentication).id;
+    const [postTime, setPostTime] = useState('');
 
     useEffect(() => {
         getUsername();
@@ -58,12 +54,10 @@ const ComplaintView = ({ complaint, i, comments }: { complaint: ComplaintsInterf
 
     const handleComplaintComment = (_complaintId: string) => (formSubmit: React.FormEvent<HTMLFormElement>) => {
         formSubmit.preventDefault();
-
         let fd = new FormData(formSubmit.currentTarget);
         const jsonComment = JSON.stringify(Object.fromEntries(fd));
-
         console.log('====================================');
-        console.log(jsonComment, "Neewcomment");
+        console.log(jsonComment, "Newcomment");
         console.log('====================================');
         axios.post(`${baseUrl}comments/create`, jsonComment, {
             headers: {
@@ -73,7 +67,6 @@ const ComplaintView = ({ complaint, i, comments }: { complaint: ComplaintsInterf
 
         }).then(res => {
             alert('comment created')
-
         }).catch(error => {
             console.log('comment not created')
 
@@ -84,13 +77,7 @@ const ComplaintView = ({ complaint, i, comments }: { complaint: ComplaintsInterf
         const userId = complaint.user;
         let user = allUserContext.value.filter(e => userId == e.id)
         setPostSender(user[0])
-        // setIsCurrentUserPostSender(postSender?.id === loggedInUserId);
-        // console.log('====================================');
-        // console.log(isCurrentUserPostSender);
-        // console.log('====================================');
-
-
-    }
+        }
     function getPostTime() {
         const timestamp = complaint?.created_at;
         const formattedDateTime = new Date(timestamp).toLocaleString();
@@ -107,11 +94,6 @@ const ComplaintView = ({ complaint, i, comments }: { complaint: ComplaintsInterf
                     </div>
                     <div className="">
                         <button role="button" className="form-control btn btn-primary btn-teal rounded-pill submit px-3" data-bs-toggle="modal" data-bs-target={`#exampleModal${complaint.id}`}>Comment</button>
-                        {/* {isCurrentUserPostSender && (
-                            <button className="btn btn-danger btn-teal btn-sm">
-                                Delete
-                            </button>
-                        )} */}
                     </div>
                 </div>
                 <div className="p-2 d-flex flex-wrap">

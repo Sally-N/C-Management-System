@@ -28,43 +28,9 @@ const LoginComponent = () => {
       object[key] = value;
     });
 
-
     console.log('====================================');
     console.log(object, 'obj');
     console.log('====================================');
-
-
-    // console.log( `Basic ${JSON.stringify(object)}`)
-
-
-    //   axios.get(`${baseUrl}users/`, {
-    //     auth: object
-    //   }).then(res => {
-    //     console.log('allUsers', res.data);
-    //     localStorage.setItem("allUsers", JSON.stringify(res.data as UserInterface[]))
-    //     console.log(localStorage)
-    //     allUserContext.update(res.data as UserInterface[])
-    //     let filterData = (res.data as UserInterface[]).filter((user) => user.email == object.username)
-    //     console.log('====================================');
-    //     console.log(filterData, object,  object.username, "filterData");
-    //     console.log('====================================');
-    //     if (filterData.length > 0) {
-    //       alert('Login successful!');
-    //       let authData: Authentication = {
-    //         auth: object,
-    //         id: filterData[0].id,
-    //         userName: filterData[0].username
-    //       }
-    //       localStorage.setItem('user', JSON.stringify(authData));
-    //       router.push("/");
-    //     } else {
-    //       alert('User not found!');
-    //     }
-    //   }).catch(error => {
-    //     console.log('allUsersError', error)
-    //   })
-    // }
-
     console.log('====================================');
 
     console.log(`Basic ${btoa(`${object.username}:${object.password}`)}`);
@@ -106,52 +72,10 @@ const LoginComponent = () => {
       } else {
         alert('User not found!');
       }
-
     } catch (error) {
       console.log(error, 'logintsx error');
     }
-    // .then(res => {
-    //   console.log('allUsers', res.data);
-    //   localStorage.setItem("allUsers", JSON.stringify(res.data as UserInterface[]))
-    //   console.log(localStorage)
-    //   allUserContext.update(res.data as UserInterface[])
-    //   let filterData = (res.data as UserInterface[]).filter((user) => user.email == object.username)
-    //   console.log('====================================');
-    //   console.log(filterData, object, object.username, "filterData");
-    //   console.log('====================================');
-    //   if (filterData.length > 0) {
-    //     alert('Login successful!');
-    //     let authData: Authentication = {
-    //       auth: object,
-    //       id: filterData[0].id,
-    //       userName: filterData[0].username
-    //     }
-    //     localStorage.setItem('user', JSON.stringify(authData));
-    //     router.push("/");
-    //   } else {
-    //     alert('User not found!');
-    //   }
-    // }).catch(error => {
-    //   console.log('allUsersError', error)
-    // })
-
-
-    // try {
-    //   const response = await axios.get(`${baseUrl}users/`, {
-    //     auth: object
-    //   });
-
-    //   if (response.status === 200) {
-    //     const data = response.data;
-    //     console.log(data); // Process the response data
-    //   } else {
-    //     console.log('Request failed:', response.status, response.statusText);
-    //     // Handle the error based on the response status
-    //   }
-    // } catch (error) {
-    //   console.log('Error:', error);
-    // }
-    // };
+     
 
   }
   return <section className="ftco-section">
@@ -192,7 +116,6 @@ const LoginComponent = () => {
       </div>
     </div>
   </section>
-
 }
 
 export default LoginComponent

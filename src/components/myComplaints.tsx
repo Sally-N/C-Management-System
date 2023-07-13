@@ -94,8 +94,6 @@ const MyComplaintComponent = () => {
             console.log("post not sent")
            
         })
-
-
     }
 
     return <div className="wrapper">
@@ -116,18 +114,13 @@ const MyComplaintComponent = () => {
                     </div>
                 </nav>
 
-
                 <div className="mb-2 fixedMenuFix">
                     {
                         myComplaints?.map((complaint, i) => <>
-
                             <ComplaintView comments={ comments.filter(e=> e.complaint == complaint.id ) } complaint={complaint} i={i} />
 
                         </>
                         )}
-
-
-
                 </div >
             </div >
 
