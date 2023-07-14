@@ -22,6 +22,8 @@ const LoginComponent = () => {
   const handleLogin = async (formSubmit: FormEvent<HTMLFormElement>) => {
     formSubmit.preventDefault();
 
+
+
     const fd = new FormData(formSubmit.currentTarget);
     var object: any = {};
     fd.forEach(function (value, key) {
@@ -32,7 +34,6 @@ const LoginComponent = () => {
     console.log(object, 'obj');
     console.log('====================================');
     console.log('====================================');
-
     console.log(`Basic ${btoa(`${object.username}:${object.password}`)}`);
     console.log(`Basic ${Buffer.from(`${object.username}:${object.password}`).toString('base64')}`
     )

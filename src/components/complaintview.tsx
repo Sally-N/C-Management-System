@@ -5,13 +5,13 @@ import { baseUrl } from "./home";
 import { useContext, useEffect, useState } from "react";
 import React from "react";
 import { AllUsersContext } from "../context/allusers";
+import { btoa } from "buffer";
 
 
 const CommentComponent = ({ comm }: { comm: CommentsInterface }) => {
     const allUserContext = useContext(AllUsersContext)
     const [commSender, setCommSender] = useState<UserInterface | null>(null)
     const [postTime, setPostTime] = useState('')
-
 
     function getPostTime() {
         const timestamp = comm?.created_at;
@@ -46,38 +46,53 @@ const CommentComponent = ({ comm }: { comm: CommentsInterface }) => {
 const ComplaintView = ({ complaint, i, comments }: { complaint: ComplaintsInterface, i: number, comments: CommentsInterface[] }) => {
     const [postSender, setPostSender] = useState<UserInterface | null>(null);
     const [postTime, setPostTime] = useState('');
-
     useEffect(() => {
         getUsername();
         getPostTime();
     },)
 
-    const handleComplaintComment = (_complaintId: string) => (formSubmit: React.FormEvent<HTMLFormElement>) => {
+    const handleComplaintComment = (_complaintId: string) => async (formSubmit: React.FormEvent<HTMLFormElement>) => {
         formSubmit.preventDefault();
         let fd = new FormData(formSubmit.currentTarget);
         const jsonComment = JSON.stringify(Object.fromEntries(fd));
+        const userAuth = JSON.parse(localStorage.getItem('user')!) as Authentication;
+        const encodedAuth = `${`${userAuth.auth.username}:${userAuth.auth.password}`}`
         console.log('====================================');
         console.log(jsonComment, "Newcomment");
         console.log('====================================');
-        axios.post(`${baseUrl}comments/create`, jsonComment, {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            auth: (JSON.parse(localStorage.getItem('user')!) as Authentication).auth,
-
-        }).then(res => {
+        try {
+            const response = await fetch(`api/createcomment/?auth=${encodedAuth}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ jsonComment })
+            });
+            const data = await response.json();
             alert('comment created')
-        }).catch(error => {
-            console.log('comment not created')
+        } catch (error) {
+            console.log(error, 'comment error');
+            alert('failed to send comment');
+        }
+        // axios.post(`${baseUrl}comments/create`, jsonComment, {
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     },
+        // auth: (JSON.parse(localStorage.getItem('user')!) as Authentication).auth,
 
-        })
+        // }).then(res => {
+        //     alert('comment created')
+        // }).catch(error => {
+        //     console.log('comment not created')
+
+        // })
     }
     const allUserContext = useContext(AllUsersContext)
     function getUsername() {
         const userId = complaint.user;
         let user = allUserContext.value.filter(e => userId == e.id)
         setPostSender(user[0])
-        }
+    }
     function getPostTime() {
         const timestamp = complaint?.created_at;
         const formattedDateTime = new Date(timestamp).toLocaleString();

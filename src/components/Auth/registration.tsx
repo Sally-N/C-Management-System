@@ -44,6 +44,7 @@ const SignupComponent = () => {
             console.log(localStorage, 'reg')
             console.log(response, "data");
             window.location.href = "/login";
+            
         } catch (error) {
             console.log(error);
         }
@@ -67,7 +68,7 @@ const SignupComponent = () => {
                                 </div>
                                 {usernameError && <p className="text-danger"><small>{usernameError}</small></p>}
                                 <div className="form-group mt-4">
-                                    <input type="text" className="form-control rounded-pill input-area" placeholder="Email address"
+                                    <input type="text" value={email} className="form-control rounded-pill input-area" placeholder="Email address"
                                         onChange={(e) => setEmail(e.target.value)} required />
                                 </div>
                                 <div className="form-group mt-4">

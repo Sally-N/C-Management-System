@@ -18,13 +18,15 @@ const HomeComponent = () => {
     const [postTime, setPostTime] = useState('');
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('')
+    const [imageUrl, setImageUrl] = useState('');
+    const [status, setStatus] = useState('pending');
+    const [user, setUser] = useState((JSON.parse(localStorage.getItem('user')!) as Authentication).id);
+
     const comments = useGetComments()
 
     const handleSidebarToggle = () => {
         setIsSidebarActive(!isSidebarActive);
     };
-
-
 
     useEffect(() => {
         getComplaintsAndComments();
@@ -46,8 +48,6 @@ const HomeComponent = () => {
         } catch (error) {
             console.log(error, 'allCompliantshome error');
         }
-
-
         if (allComplaints) {
             const timestamp = allComplaints[0]?.created_at;
             const formattedDateTime = new Date(timestamp).toLocaleString();
@@ -55,21 +55,37 @@ const HomeComponent = () => {
         }
     }
 
+    const handleImageChange = (event : any) => {
+        const file = event.target.files[0];
+        const image = file.name;
+        setImageUrl(image);
+        console.log(imageUrl, 'image');
+      };
 
     const handleComplaintData = async (formSubmit: FormEvent<HTMLFormElement>) => {
         formSubmit.preventDefault();
-        const userAuth = (JSON.parse(localStorage.getItem('user')!) as Authentication).auth;
+        const userAuth = JSON.parse(localStorage.getItem('user')!) as Authentication;
         console.log(userAuth);
-        let fd = new FormData(formSubmit.currentTarget);
-        fd.append("username", userAuth.username);
-        fd.append("password", userAuth.password);
-        console.log(fd)
-        // fd.append('auth', JSON.stringify(user.auth));
+        // const uId = userAuth.id;
+        const encodedAuth = `${btoa(`${userAuth.auth.username}:${userAuth.auth.password}`)}`
+        // let fd = new FormData(formSubmit.currentTarget);
+        // console.log(fd);
+        const formData = {title, description, imageUrl, status, user };
+        const fd = new FormData;
+        fd.append('title', title)
+        fd.append('description', description);
+        fd.append('image', imageUrl);
+        fd.append('status', status);
+        fd.append('user', user)
 
+        console.log(formData, 'new');
         try {
-            const response = await fetch('api/createcomplaint', {
+            const response = await fetch(`api/createcomplaint/?auth=${encodedAuth}`, {
                 method: 'POST',
-                body: fd
+                headers: {
+                    'Content-Type': 'multipart/formdata'
+                },
+                body: fd,
             });
             const data = await response.json();
             alert('complaint created');
@@ -92,7 +108,7 @@ const HomeComponent = () => {
     //     console.log("post not sent")
 
     // })
-
+    
     return <div className="wrapper">
         <Nav option="home" isSidebarActive={isSidebarActive} />
 
@@ -142,8 +158,9 @@ const HomeComponent = () => {
                                     value={title} onChange={(e) => setTitle(e.target.value)} />
                             </div>
                             <textarea className="modalTextArea" name="description" value={description} onChange={(e) => setDescription(e.target.value)} />
-                            <input type="file" name="image" />
-                            <input type="text" name="status" value="pending" hidden />
+                            <input type="file" name="image" onChange={handleImageChange}/>
+                            
+                            <input type="text" name="status" value={status} hidden/>
                             <input type="text" name="user" value={(JSON.parse(localStorage.getItem('user')!) as Authentication).id} hidden />
 
                         </div>

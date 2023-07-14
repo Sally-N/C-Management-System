@@ -36,8 +36,7 @@ const MyComplaintComponent = () => {
 
     const getComplaintsAndComments = async() => {
         const user = (JSON.parse(localStorage.getItem('user')!)as Authentication);
-        const uId = user.id;
- 
+        const uId = user.id; 
             try {
                 const response = await fetch('/api/myComplaints', {
                     method: 'POST',
@@ -52,7 +51,6 @@ const MyComplaintComponent = () => {
             } catch (error) {
                 console.log(error, 'allCompliantshome error');
             }
-
         }
 
 
