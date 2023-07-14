@@ -1,10 +1,8 @@
-import React, { ChangeEvent, FormEvent } from "react";
+import React, {  FormEvent } from "react";
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import axios from "axios";
 import { ComplaintsInterface } from "../interfaces/complaintInterface";
 import { Authentication, UserInterface } from "../interfaces/user";
-import { generateSessionToken } from "../../utilities/sessionUtils";
 import ComplaintView from "./complaintview";
 import { useGetComments } from "../hook/comments";
 import Nav from "./nav";

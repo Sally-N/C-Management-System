@@ -1,11 +1,8 @@
-import axios from "axios";
 import { ComplaintsInterface, CommentsInterface } from "../interfaces/complaintInterface"
 import { Authentication, UserInterface } from "../interfaces/user"
-import { baseUrl } from "./home";
 import { useContext, useEffect, useState } from "react";
 import React from "react";
 import { AllUsersContext } from "../context/allusers";
-import { btoa } from "buffer";
 
 
 const CommentComponent = ({ comm }: { comm: CommentsInterface }) => {

@@ -3,7 +3,6 @@ import '../styles/globals.css'
 import Head from "next/head";
 import Script from "next/script";
 import { useEffect, useState } from 'react';
-import LoginPage from './login';
 import { useRouter } from 'next/router';
 import { AllUsersContext } from '../src/context/allusers';
 import { UserInterface } from '../src/interfaces/user';

@@ -1,6 +1,5 @@
 import React from "react";
 import { useState, FormEvent } from "react";
-import { RegisterInterface } from "../../interfaces/register";
 import Link from "next/link";
 
 const SignupComponent = () => {

@@ -1,15 +1,11 @@
 "use client"
 import Link from "next/link";
-import React, { FormEvent, use, useContext } from "react";
-import { useState, useEffect } from "react";
+import React, { FormEvent, useContext } from "react";
+import { useState} from "react";
 import { useRouter } from "next/router";
-import { generateSessionToken } from "../../../utilities/sessionUtils";
-import axios from "axios";
 import { UserInterface, Authentication } from "../../interfaces/user";
 import { AllUsersContext } from "../../context/allusers";
-import { baseUrl } from "../home";
-import { json } from "stream/consumers";
-import { log } from "console";
+
 
 
 const LoginComponent = () => {
