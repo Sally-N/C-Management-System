@@ -6,8 +6,6 @@ export default async function handler(req: { body: { mp: any; auth: any; uId: an
     console.log('====================================');
     console.log(mp, auth, uId);
     console.log('====================================');
-
-
     try {
         const response = await fetch(`${baseUrl}users/update/${uId}`, {
             method: 'PUT',
