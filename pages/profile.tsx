@@ -47,6 +47,7 @@ const Profile = () => {
                 // localStorage.removeItem('user');
                 // localStorage.setItem('user', JSON.stringify(userData));
                 // console.log(localStorage.getItem('user'), 'user');
+                localStorage.clear()
                 console.log(localStorage);
                 router.push("/login")
             } catch (error) {
