@@ -8,7 +8,7 @@ import { useGetComments } from "../hook/comments";
 import Nav from "./nav";
 export const baseUrl = "https://www.muganedev.tech/api/v1/"
 import { config } from "../../pages/api/createcomplaint";
-import { log } from "util";
+
 
 const HomeComponent = () => {
     const [isSidebarActive, setIsSidebarActive] = useState(false);
