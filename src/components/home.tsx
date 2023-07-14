@@ -1,6 +1,5 @@
 import React, { ChangeEvent, FormEvent } from "react";
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import axios from "axios";
 import { ComplaintsInterface } from "../interfaces/complaintInterface";
 import { Authentication, UserInterface } from "../interfaces/user";
@@ -8,8 +7,8 @@ import ComplaintView from "./complaintview";
 import { useGetComments } from "../hook/comments";
 import Nav from "./nav";
 export const baseUrl = "https://www.muganedev.tech/api/v1/"
-
-
+import { config } from "../../pages/api/createcomplaint";
+import { log } from "util";
 
 const HomeComponent = () => {
     const [isSidebarActive, setIsSidebarActive] = useState(false);
@@ -55,41 +54,40 @@ const HomeComponent = () => {
         }
     }
 
-    const handleImageChange = (event : any) => {
+    const handleImageChange = (event: any) => {
         const file = event.target.files[0];
         const image = file.name;
         setImageUrl(image);
         console.log(imageUrl, 'image');
-      };
+    };
 
     const handleComplaintData = async (formSubmit: FormEvent<HTMLFormElement>) => {
         formSubmit.preventDefault();
         const userAuth = JSON.parse(localStorage.getItem('user')!) as Authentication;
         console.log(userAuth);
-        // const uId = userAuth.id;
         const encodedAuth = `${btoa(`${userAuth.auth.username}:${userAuth.auth.password}`)}`
-        // let fd = new FormData(formSubmit.currentTarget);
-        // console.log(fd);
-        const formData = {title, description, imageUrl, status, user };
-        const fd = new FormData;
-        fd.append('title', title)
-        fd.append('description', description);
-        fd.append('image', imageUrl);
-        fd.append('status', status);
-        fd.append('user', user)
 
-        console.log(formData, 'new');
         try {
-            const response = await fetch(`api/createcomplaint/?auth=${encodedAuth}`, {
-                method: 'POST',
+            const formData = new FormData();
+            formData.append('title', title)
+            formData.append('description', description);
+            formData.append('image', imageUrl);
+            formData.append('status', status);
+            formData.append('user', user);
+            console.log(formData, 'fd');
+            console.log(title, description, imageUrl, status, user);
+            
+
+            const res = await axios.post('/api/createcomplaint', formData, {
                 headers: {
-                    'Content-Type': 'multipart/formdata'
-                },
-                body: fd,
-            });
-            const data = await response.json();
-            alert('complaint created');
-            console.log(data)
+                    "Accept": "application/json",
+                    'Authorization': `Basic ${encodedAuth}`
+                }
+            },
+            )
+            const data = await res.data();
+            alert('complaint created successfully');
+            console.log(data, "complaint created")
         } catch (error) {
             console.log(error, "complaint creation error");
             alert('complaint failed to send');
@@ -108,7 +106,7 @@ const HomeComponent = () => {
     //     console.log("post not sent")
 
     // })
-    
+
     return <div className="wrapper">
         <Nav option="home" isSidebarActive={isSidebarActive} />
 
@@ -142,7 +140,7 @@ const HomeComponent = () => {
         </div >
 
         <div className="modal" id="complaintModal" tabIndex={-1} role="dialog" aria-labelledby="exampleModalLabel">
-            <form onSubmit={handleComplaintData}>
+            <form encType="multipart/form-data" onSubmit={handleComplaintData} >
                 <div className="modal-dialog modal-dialog-centered" role="document">
                     <div className="modal-content">
                         <div className="modal-header">
@@ -158,9 +156,8 @@ const HomeComponent = () => {
                                     value={title} onChange={(e) => setTitle(e.target.value)} />
                             </div>
                             <textarea className="modalTextArea" name="description" value={description} onChange={(e) => setDescription(e.target.value)} />
-                            <input type="file" name="image" onChange={handleImageChange}/>
-                            
-                            <input type="text" name="status" value={status} hidden/>
+                            <input type="file" name="image" onChange={handleImageChange} />
+                            <input type="text" name="status" value={status} hidden />
                             <input type="text" name="user" value={(JSON.parse(localStorage.getItem('user')!) as Authentication).id} hidden />
 
                         </div>
