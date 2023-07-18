@@ -55,7 +55,7 @@ const HomeComponent = () => {
 
     const handleImageChange = (event: any) => {
         const file = event.target.files[0];
-        const image = file.name;
+        const image = file;
         setImageUrl(image);
         console.log(imageUrl, 'image');
     };
@@ -80,8 +80,7 @@ const HomeComponent = () => {
             const res = await axios.post('/api/createcomplaint', formData, {
                 headers: {
                     "Accept": "application/json",
-                    'Authorization': `Basic ${encodedAuth}`
-                }
+                    'Authorization': `Basic ${encodedAuth}`     }
             },
             )
             const data = await res.data();
@@ -93,18 +92,6 @@ const HomeComponent = () => {
         }
 
     }
-    // axios.post(`${baseUrl}complaints/create`, fd, {
-    //     auth: (JSON.parse(localStorage.getItem('user')!) as Authentication).auth,
-    //     headers: {
-    //         'Content-Type': 'multipart/form-data'
-    //     }
-    // }).then(res => {
-    //     alert('postsent');
-
-    // }).catch(error => {
-    //     console.log("post not sent")
-
-    // })
 
     return <div className="wrapper">
         <Nav option="home" isSidebarActive={isSidebarActive} />

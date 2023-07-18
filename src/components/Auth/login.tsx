@@ -100,11 +100,6 @@ const LoginComponent = () => {
                 <div className="form-group mt-4">
                   <button type="submit" className="form-control btn btn-primary btn-teal rounded-pill submit px-3">Sign In</button>
                 </div>
-                <div className="form-group d-md-flex mt-3">
-                  <div className="text-end w-100">
-                    <a href="#" className="fw-bold txt-link">Forgot Password?</a>
-                  </div>
-                </div>
               </form>
               <p className="text-center mt-4">Don&apos;t have an account? <Link data-toggle="tab" href="/signup" className="fw-bold txt-link">Sign Up</Link></p>
             </div>

@@ -1,6 +1,6 @@
 import { FormEvent, useState } from "react";
 import Nav from "../src/components/nav";
-import { Authentication, UserInterface } from "../src/interfaces/user";
+import { Authentication } from "../src/interfaces/user";
 
 import { useRouter } from "next/router";
 
