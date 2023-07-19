@@ -14,21 +14,19 @@ const SignupComponent = () => {
 
     const handleSubmit = async (submit: FormEvent<HTMLFormElement>) => {
         submit.preventDefault()
+        if (!/^(?=.*\d.*\d)[a-zA-Z0-9]+$/.test(username)) {
+            setUsernameError('Username should be alphanumeric and contain atleast 2 numbers');
+            return;
+        }
+
         if (password !== cpassword) {
             setConfirmPasswordError('Passwords do not match');
             return;
         } else if (password.length < 8 || cpassword.length < 8) {
             setConfirmPasswordError('Password should have a minimum of 8 characters')
-            return; 
-        }//  else if (password.length >= 8 && cpassword.length >= 8 && password === cpassword){
-
-        // }
-       
-
-        if (!/\d.*\d/.test(username)) {
-            setUsernameError('Username should contain at least 2 numbers');
             return;
         }
+
         const formData = { username, email, password }
         console.log(formData, 'fd')
         try {
@@ -43,7 +41,7 @@ const SignupComponent = () => {
             console.log(localStorage, 'reg')
             console.log(response, "data");
             window.location.href = "/login";
-            
+
         } catch (error) {
             console.log(error);
         }

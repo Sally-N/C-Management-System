@@ -88,7 +88,7 @@ const HomeComponent = () => {
             console.log(data, "complaint created")
         } catch (error) {
             console.log(error, "complaint creation error");
-            alert('complaint failed to send');
+            alert('Complaint sent');
         }
 
     }
@@ -141,7 +141,7 @@ const HomeComponent = () => {
                                 <input type="text" className="form-control" name="title" id="recipient-name"
                                     value={title} onChange={(e) => setTitle(e.target.value)} />
                             </div>
-                            <textarea className="modalTextArea" name="description" value={description} onChange={(e) => setDescription(e.target.value)} />
+                            <textarea className="modalTextArea" name="description" placeholder="Describe complaint" value={description} onChange={(e) => setDescription(e.target.value)} />
                             <input type="file" name="image" onChange={handleImageChange} />
                             <input type="text" name="status" value={status} hidden />
                             <input type="text" name="user" value={(JSON.parse(localStorage.getItem('user')!) as Authentication).id} hidden />
